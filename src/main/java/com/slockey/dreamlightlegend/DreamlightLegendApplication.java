@@ -1,13 +1,16 @@
 package com.slockey.dreamlightlegend;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.slockey.dreamlightlegend.tui.AppController;
 
 @SpringBootApplication
 public class DreamlightLegendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(DreamlightLegendApplication.class, args);
-	}
+    public static void main(String[] args) throws Exception {
 
+        AppController controller = new AppController();
+        controller.start();
+
+    }
 }
