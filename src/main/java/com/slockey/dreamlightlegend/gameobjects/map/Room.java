@@ -35,25 +35,60 @@ public class Room {
     }
 
     public String getDisplayString() {
-        boolean isExit = (north == -2 || north >= 0 
-            || east == -2 || east >= 0 
-            || south == -2 || south >= 0 
-            || west == -2 || west >= 0);
 
         StringBuilder builder = new StringBuilder();
         builder.append(name);
         builder.append("\n");
         builder.append(description);
         builder.append("\n");
-        if ( isExit ) {
-            builder.append("There are exits: ");
-            if (north == -2 || north >= 0) builder.append("  North");
-            if (east == -2 || east >= 0) builder.append("  East");
-            if (south == -2 || south >= 0) builder.append("  South");
-            if (west == -2 || west >= 0) builder.append("  West");
-        } else {
-            builder.append("There are no exits");
+
+        builder.append("There are exits: \n");
+
+        if (north <= -2 || north >= 0) {
+            builder.append("There is a ");
+            builder.append(displayExit(north));
+            builder.append("  to the North\n");
         }
+
+        if (east <= -2 || east >= 0) {
+            builder.append("There is a ");
+            builder.append(displayExit(east));
+            builder.append("  to the East\n");
+        }
+
+        if (south <= -2 || south >= 0) {
+            builder.append("There is a ");
+            builder.append(displayExit(south));
+            builder.append("  to the South\n");
+        }
+
+        if (west <= -2 || west >= 0) {
+            builder.append("There is a ");
+            builder.append(displayExit(west));
+            builder.append("  to the West\n");
+        }
+
         return builder.toString();
     }
+
+    private String displayExit(int direction) {
+        String type = "";
+        switch(direction) {
+            case (Direction.BARRICADE):
+                type = "barricade";
+                break;
+            case (Direction.DOOR):
+                type = "door";
+                break;
+            case (Direction.LOCKED_DOOR):
+                type = "locked door";
+                break;
+            default:
+                type = "passage";
+                break;
+        }
+        return type;
+
+    }
+
 }

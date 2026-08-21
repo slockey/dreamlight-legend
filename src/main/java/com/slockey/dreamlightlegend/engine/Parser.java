@@ -162,7 +162,7 @@ public class Parser {
                     tempVerb.add(wt2);
                     msg = processVerb(game, actor, tempVerb);
         } else if (wt.getWordtype() == WordType.VERB 
-                && wt.getWord().equals("look")
+                && (wt.getWord().equals("look") || wt.getWord().equals("l"))
                 && wt2.getWordtype() == WordType.VERB 
                 && Direction.getDirection(wt2.getWord()) != null) {
                     msg = game.lookDirection(actor, Direction.getDirection(wt2.getWord()));

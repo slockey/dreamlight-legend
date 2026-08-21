@@ -56,7 +56,25 @@ public class Game {
     }
 
     public String lookDirection(Actor actor, Direction direction) {
-        String msg = String.format("Adventure Game: look direction: {}", direction.toString());
+        String msg = "";
+        Room currentRoom = actor.getRoom();
+        int targetDirection = currentRoom.getDirection(direction);
+        switch(targetDirection) {
+            case (Direction.NOEXIT):
+                msg = "You stare at stone wall. There is no exit " + direction.toString().toLowerCase();
+                break;
+            case (Direction.DOOR):
+            case (Direction.LOCKED_DOOR):
+                msg = "The way " + direction.toString().toLowerCase() + " is blocked by a door.";
+                break;
+            case (Direction.BARRICADE):
+                msg = "The way " + direction.toString().toLowerCase() + " is barricaded.";
+                break;
+            default:
+                msg = "The passage " + direction.toString().toLowerCase() + " leads off into the dark.";
+                break;
+        };
+
         return msg;
     }
 
@@ -94,13 +112,18 @@ public class Game {
                 Room generatedRoom = roomGenerator.generateRoom(newRoomId, currentRoom);
                 rooms.add(generatedRoom);
                 targetDirection = newRoomId;
+
+                // get the target room
+                Room targetRoom = map.getRooms().get(targetDirection);
+                // apply room to actor
+                actor.setRoom(targetRoom);
+                moved = true;
             }
 
-            // get the target room
-            Room targetRoom = map.getRooms().get(targetDirection);
-            // apply room to actor
-            actor.setRoom(targetRoom);
-            moved = true;
+            if (targetDirection == Direction.DOOR || targetDirection == Direction.LOCKED_DOOR) {
+                moved = false;
+            }
+
         }
 
         return moved;

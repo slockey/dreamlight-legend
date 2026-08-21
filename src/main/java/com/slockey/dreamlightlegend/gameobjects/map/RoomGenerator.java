@@ -53,10 +53,23 @@ public class RoomGenerator {
         }
 
         // if more than 1 exit then flag the remainders for lazy loading
+        // 60% is a door
+        // 40% of doors are locked
         for (int idx = 1; idx < numberOfExits; idx++) {
             for (int jdx = 0; jdx < exits.length; jdx++) {
                 if (exits[jdx] == Direction.NOEXIT) {
-                    exits[jdx] = Direction.GENEXIT;
+                    // determine if this is a door or corridor
+                    int exitTypePercentile = getPercentile();
+                    if (exitTypePercentile <= 20) {
+                        exits[jdx] = Direction.LOCKED_DOOR;
+                        break;
+                    } else if (exitTypePercentile <= 60) {
+                        exits[jdx] = Direction.DOOR;
+                        break;
+                    } else {
+                        // this is a corridor
+                        exits[jdx] = Direction.GENEXIT;
+                    }
                     break;
                 }
             }
@@ -92,7 +105,7 @@ public class RoomGenerator {
     public int getNumberOfExits() {
         // generate random percentile to determine number of exits
         // minimum is 1 since there will be a linking room id
-        int percentile = (int)(Math.random() * 100) + 1;
+        int percentile = getPercentile();
         if (percentile <= 30) {
             return 1;
         } else if (percentile <= 75) {
@@ -122,6 +135,10 @@ public class RoomGenerator {
 
     public String getCorridorDescription(int id) {
         return corridorDescriptions.get(id);
+    }
+
+    private int getPercentile() {
+        return (int)(Math.random() * 100) + 1;
     }
 
     private void init() {
