@@ -166,6 +166,11 @@ public class Parser {
                 && wt2.getWordtype() == WordType.VERB 
                 && Direction.getDirection(wt2.getWord()) != null) {
                     msg = game.lookDirection(actor, Direction.getDirection(wt2.getWord()));
+        } else if (wt.getWordtype() == WordType.VERB 
+                && wt.getWord().equals("open")
+                && wt2.getWordtype() == WordType.VERB 
+                && Direction.getDirection(wt2.getWord()) != null) {
+                    msg = game.openDirection(actor, Direction.getDirection(wt2.getWord()));
         } else if (wt2.getWordtype() != WordType.NOUN) {
             msg = "Can't do this because '" + wt2.getWord() + "' is not an object!";
         } else {

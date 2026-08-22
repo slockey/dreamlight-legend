@@ -55,6 +55,49 @@ public class Game {
 
     }
 
+    public String openDirection(Actor actor, Direction direction) {
+        String msg = "";
+        Room currentRoom = actor.getRoom();
+        int targetDirection = currentRoom.getDirection(direction);
+        if (targetDirection == Direction.DOOR) {
+            if (changeRoomDirectionValue(currentRoom, direction, Direction.GENEXIT)) {
+                msg = "With some effort the door becomes unstuck. The door screams into the darkness as you pull it open.";
+            } else {
+                msg = "You fail to open the door. It remains stuck fast.";
+            }
+        } else if (targetDirection == Direction.LOCKED_DOOR) {
+            msg = "You must unlock the door first.";
+        } else if (targetDirection == Direction.BARRICADE) {
+            msg = "You must break the barricade first.";
+        }
+        return msg;
+    }
+
+    private boolean changeRoomDirectionValue(Room room, Direction fromDirection, int toDirection) {
+        boolean success = false;
+        switch (fromDirection) {
+            case Direction.NORTH:
+                room.setNorth(toDirection);
+                success = true;
+                break;
+            case Direction.EAST:
+                room.setEast(toDirection);
+                success = true;
+                break;
+            case Direction.SOUTH:
+                room.setSouth(toDirection);
+                success = true;
+                break;
+            case Direction.WEST:
+                room.setWest(toDirection);
+                success = true;
+                break;
+            default:
+                break;
+        }
+        return success;
+    }
+
     public String lookDirection(Actor actor, Direction direction) {
         String msg = "";
         Room currentRoom = actor.getRoom();
