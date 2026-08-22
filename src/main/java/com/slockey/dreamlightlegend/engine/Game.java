@@ -79,54 +79,61 @@ public class Game {
     }
 
     public boolean moveActor(Actor actor, Direction direction) {
-        boolean moved = false;
 
         // get the actor's current room
         Room currentRoom = actor.getRoom();
 
         // determine if the move can happen
         int targetDirection = currentRoom.getDirection(direction);
-        if (targetDirection != Direction.NOEXIT) {
-            // check if we should generate a next room
-            if (targetDirection == Direction.GENEXIT) {
-                // generate a room
-                // TODO: refactor this into RoomGenerator
-                RoomGenerator roomGenerator = new RoomGenerator();
-                ArrayList<Room> rooms = map.getRooms();
-                int newRoomId = rooms.size();
-                switch (direction) {
-                    case Direction.NORTH:
-                        currentRoom.setNorth(newRoomId);
-                        break;
-                    case Direction.EAST:
-                        currentRoom.setEast(newRoomId);
-                        break;
-                    case Direction.SOUTH:
-                        currentRoom.setSouth(newRoomId);
-                        break;
-                    case Direction.WEST:
-                        currentRoom.setWest(newRoomId);
-                    default:
-                        break;
-                }
-                Room generatedRoom = roomGenerator.generateRoom(newRoomId, currentRoom);
-                rooms.add(generatedRoom);
-                targetDirection = newRoomId;
-
-                // get the target room
-                Room targetRoom = map.getRooms().get(targetDirection);
-                // apply room to actor
-                actor.setRoom(targetRoom);
-                moved = true;
-            }
-
-            if (targetDirection == Direction.DOOR || targetDirection == Direction.LOCKED_DOOR) {
-                moved = false;
-            }
-
+        // direction blocked
+        if (targetDirection == Direction.NOEXIT) {
+            return false;
         }
 
-        return moved;
+        // blocked by unopened door
+        if (targetDirection == Direction.DOOR || targetDirection == Direction.LOCKED_DOOR) {
+            return false;
+        }
+
+        // check if we should generate a next room
+        if (targetDirection == Direction.GENEXIT) {
+            // generate a room
+            // TODO: refactor this into RoomGenerator
+            RoomGenerator roomGenerator = new RoomGenerator();
+            ArrayList<Room> rooms = map.getRooms();
+            int newRoomId = rooms.size();
+            switch (direction) {
+                case Direction.NORTH:
+                    currentRoom.setNorth(newRoomId);
+                    break;
+                case Direction.EAST:
+                    currentRoom.setEast(newRoomId);
+                    break;
+                case Direction.SOUTH:
+                    currentRoom.setSouth(newRoomId);
+                    break;
+                case Direction.WEST:
+                    currentRoom.setWest(newRoomId);
+                default:
+                    break;
+            }
+            Room generatedRoom = roomGenerator.generateRoom(newRoomId, currentRoom);
+            rooms.add(generatedRoom);
+            targetDirection = newRoomId;
+
+            // get the target room
+            Room targetRoom = map.getRooms().get(targetDirection);
+            // apply room to actor
+            actor.setRoom(targetRoom);
+            return true;
+        }
+
+        // no known blockers - get the target room
+        Room targetRoom = map.getRooms().get(targetDirection);
+        // apply room to actor
+        actor.setRoom(targetRoom);
+        return true;
+
     }
 
     // utility method to display string if not empty
