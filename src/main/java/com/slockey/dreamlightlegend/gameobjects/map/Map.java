@@ -1,25 +1,48 @@
 package com.slockey.dreamlightlegend.gameobjects.map;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 public class Map {
+
     private RoomGenerator roomGenerator = new RoomGenerator();
-    private ArrayList<Room> rooms = new ArrayList<>();
+    private LinkedHashMap<String,Room> rooms = new LinkedHashMap<>();
 
-    public Iterator<Room> getIterator() {
-        return rooms.iterator();
+    public Room getRoom(String roomId) {
+        return rooms.get(roomId);
     }
 
-    public ArrayList<Room> getRooms() {
-        return rooms;
+    public Room putRoom(String roomId, Room room) {
+        return rooms.put(roomId, room);
     }
 
+    public Room removeRoom(String roomId) {
+        return rooms.remove(roomId);
+    }
+
+    public void removeAllRooms() {
+        rooms.clear();
+    }
+
+    public Room getStartingRoom() {
+        Entry<String,Room> firstEntry = rooms.firstEntry();
+        return firstEntry.getValue();
+    }
+
+    public Room addNewRoom(Room currentRoom, Direction direction) {
+        Room newRoom = roomGenerator.generateRoom(currentRoom, direction);
+        putRoom(newRoom.getId(), newRoom);
+        return newRoom;
+    }
+
+    // For now all this does is create the starting room
     public void init() {
-        rooms.add(roomGenerator.generateStartingRoom());
-        // rooms.add(new Room(1, "Forest", roomGenerator.getRandomDescription(), -1, -1, -1, 0));
-        // rooms.add(new Room(2, "Cave", roomGenerator.getRandomDescription(), 0, 3, -1, -1));
-        // rooms.add(new Room(3, "Dungeon", roomGenerator.getRandomDescription(), -1, -1, -1, 2));
-    }
 
+        Room startingRoom = roomGenerator.generateStartingRoom();
+        // for testing - add a passage north
+        Exit northExit = roomGenerator.generatePassageExit(startingRoom.getId());
+        startingRoom.putExit(Direction.NORTH, northExit);
+        // store the starting room in the map
+        rooms.put(startingRoom.getId(), startingRoom);
+    }
 }
