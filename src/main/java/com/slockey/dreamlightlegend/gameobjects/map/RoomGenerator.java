@@ -51,7 +51,7 @@ public class RoomGenerator {
         // 40% of doors are locked
         for (int idx = 1; idx < numberOfExits; idx++) {
             for (Direction dir : availableExitDirections) {
-                if (generatedRoom.getExit(dir).getExitState().equals(Direction.NONE)) {
+                if (generatedRoom.getExit(dir).getExitState().equals(ExitState.NONE)) {
                     Exit anotherExit = new Exit(generatedRoom.getId());
                     // determine if this is a locked door, door or passage
                     int exitTypePercentile = getPercentile();

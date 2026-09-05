@@ -11,7 +11,6 @@ import com.slockey.dreamlightlegend.gameobjects.map.ExitState;
 import com.slockey.dreamlightlegend.gameobjects.map.IdGenerator;
 import com.slockey.dreamlightlegend.gameobjects.map.Map;
 import com.slockey.dreamlightlegend.gameobjects.map.Room;
-import com.slockey.dreamlightlegend.gameobjects.map.RoomGenerator;
 
 public class Game {
 
@@ -60,48 +59,29 @@ public class Game {
 
     }
 
-    // public String openDirection(Actor actor, Direction_Deprecated direction) {
-    //     String msg = "";
-    //     Room currentRoom = actor.getRoom();
-    //     int targetDirection = currentRoom.getDirection(direction);
-    //     if (targetDirection == Direction_Deprecated.DOOR) {
-    //         if (changeRoomDirectionValue(currentRoom, direction, Direction_Deprecated.GENEXIT)) {
-    //             msg = "With some effort the door becomes unstuck. The door screams into the darkness as you pull it open.";
-    //         } else {
-    //             msg = "You fail to open the door. It remains stuck fast.";
-    //         }
-    //     } else if (targetDirection == Direction_Deprecated.LOCKED_DOOR) {
-    //         msg = "You must unlock the door first.";
-    //     } else if (targetDirection == Direction_Deprecated.BARRICADE) {
-    //         msg = "You must break the barricade first.";
-    //     }
-    //     return msg;
-    // }
+    public String openDirection(Actor actor, Direction direction) {
+        String msg = "";
+        Room currentRoom = actor.getRoom();
+        Exit exit = currentRoom.getExit(direction);
 
-    // private boolean changeRoomDirectionValue(Room_Deprecated room, Direction_Deprecated fromDirection, int toDirection) {
-    //     boolean success = false;
-    //     switch (fromDirection) {
-    //         case Direction_Deprecated.NORTH:
-    //             room.setNorth(toDirection);
-    //             success = true;
-    //             break;
-    //         case Direction_Deprecated.EAST:
-    //             room.setEast(toDirection);
-    //             success = true;
-    //             break;
-    //         case Direction_Deprecated.SOUTH:
-    //             room.setSouth(toDirection);
-    //             success = true;
-    //             break;
-    //         case Direction_Deprecated.WEST:
-    //             room.setWest(toDirection);
-    //             success = true;
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    //     return success;
-    // }
+        // verify - target exit can be opened
+        if (exit.getExitState() == ExitState.CLOSED) {
+            exit.setExitState(ExitState.OPEN);
+            exit.setDescription("A door hangs open and the passage beyond leads off into the dark.");
+            msg = "With some effort the door becomes unstuck. The door screams into the darkness as you pull it open.";
+        } else if (exit.getExitState() == ExitState.LOCKED) {
+            msg = "You must unlock the door first.";
+        } else if (exit.getExitState() == ExitState.BLOCKED) {
+            msg = "You must break the barricade first.";
+        } else if (exit.getExitState() == ExitState.TRAPPED) {
+            exit.setExitState(ExitState.OPEN);
+            msg = "A trap is sprung. Something happens!";
+        } else {
+            msg = "There doesn't seem to be anything here to open.";
+        }
+
+        return msg;
+    }
 
     public String lookDirection(Actor actor, Direction direction) {
         Room currentRoom = actor.getRoom();
