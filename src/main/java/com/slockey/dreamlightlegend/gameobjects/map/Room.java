@@ -1,37 +1,49 @@
 package com.slockey.dreamlightlegend.gameobjects.map;
 
-import com.slockey.dreamlightlegend.engine.Direction;
+import java.util.HashMap;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
 public class Room {
 
-    private int id;
-    private String name, description;
-    private int north, east, south, west;
+    private String id, name, description;
+    private HashMap<String,Exit> exitHashMap;
 
-    public int getDirection(Direction direction) {
-        int directionOrdinal = -1;
-        switch (direction) {
-            case NORTH:
-                directionOrdinal = north;
-                break;
-            case EAST:
-                directionOrdinal = east;
-                break;
-            case SOUTH:
-                directionOrdinal = south;
-                break;
-            case WEST:
-                directionOrdinal = west;
-                break;
-            default:
-                break;
-        }
-        return directionOrdinal;
+    public Room() {
+        this.id = IdGenerator.getRandomIdString();
+        this.name = "default_room_name";
+        this.description = "default_room_description";
+        this.exitHashMap = new HashMap<>();
+        this.exitHashMap.put(Direction.NORTH.name(), new Exit(this.id));
+        this.exitHashMap.put(Direction.SOUTH.name(), new Exit(this.id));
+        this.exitHashMap.put(Direction.EAST.name(), new Exit(this.id));
+        this.exitHashMap.put(Direction.WEST.name(), new Exit(this.id));
+        this.exitHashMap.put(Direction.UP.name(), new Exit(this.id));
+        this.exitHashMap.put(Direction.DOWN.name(), new Exit(this.id));
+    }
+
+    public Room(String name, String description) {
+        this();
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Exit getExit(Direction direction) {
+        return exitHashMap.get(direction.name());
+    }
+
+    public Exit putExit(Direction direction, Exit exit) {
+        return this.exitHashMap.replace(direction.name(), exit);
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getDisplayString() {
@@ -40,55 +52,32 @@ public class Room {
         builder.append(name);
         builder.append("\n");
         builder.append(description);
-        builder.append("\n");
+        builder.append("\n\n");
 
         builder.append("There are exits: \n");
 
-        if (north <= -2 || north >= 0) {
-            builder.append("There is a ");
-            builder.append(displayExit(north));
-            builder.append("  to the North\n");
-        }
-
-        if (east <= -2 || east >= 0) {
-            builder.append("There is a ");
-            builder.append(displayExit(east));
-            builder.append("  to the East\n");
-        }
-
-        if (south <= -2 || south >= 0) {
-            builder.append("There is a ");
-            builder.append(displayExit(south));
-            builder.append("  to the South\n");
-        }
-
-        if (west <= -2 || west >= 0) {
-            builder.append("There is a ");
-            builder.append(displayExit(west));
-            builder.append("  to the West\n");
-        }
+        builder.append(displayExit(Direction.NORTH));
+        builder.append(displayExit(Direction.EAST));
+        builder.append(displayExit(Direction.SOUTH));
+        builder.append(displayExit(Direction.WEST));
+        builder.append(displayExit(Direction.UP));
+        builder.append(displayExit(Direction.DOWN));
 
         return builder.toString();
     }
 
-    private String displayExit(int direction) {
-        String type = "";
-        switch(direction) {
-            case (Direction.BARRICADE):
-                type = "barricade";
-                break;
-            case (Direction.DOOR):
-                type = "door";
-                break;
-            case (Direction.LOCKED_DOOR):
-                type = "locked door";
-                break;
-            default:
-                type = "passage";
-                break;
+    private String displayExit(Direction direction) {
+        String display = "";
+        Exit exit = this.exitHashMap.get(direction.name());
+        // this comparison is balls
+        if (exit.getExitState() != ExitState.NONE
+            && exit.getExitState() != ExitState.HIDDEN) {
+            display += "There is an exit ";
+            display += direction.toString().toLowerCase();
+            display += ". ";
+            display += exit.getDescriptionString();
+            display += "\n";
         }
-        return type;
-
+        return display;
     }
-
 }

@@ -1,14 +1,16 @@
 package com.slockey.dreamlightlegend.engine;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.slockey.dreamlightlegend.gameobjects.entities.Actor;
 import com.slockey.dreamlightlegend.gameobjects.entities.ItemFactory;
 import com.slockey.dreamlightlegend.gameobjects.entities.Player;
+import com.slockey.dreamlightlegend.gameobjects.map.Direction;
+import com.slockey.dreamlightlegend.gameobjects.map.Exit;
+import com.slockey.dreamlightlegend.gameobjects.map.ExitState;
+import com.slockey.dreamlightlegend.gameobjects.map.IdGenerator;
 import com.slockey.dreamlightlegend.gameobjects.map.Map;
 import com.slockey.dreamlightlegend.gameobjects.map.Room;
-import com.slockey.dreamlightlegend.gameobjects.map.RoomGenerator;
 
 public class Game {
 
@@ -20,7 +22,9 @@ public class Game {
         initGame();
 
         // XXX: temp name, description, first room on map
-        player = new Player("Player", "Just some person, you know?", map.getRooms().get(0));
+        player = new Player("Player", 
+                    "Just some person, you know?", 
+                                map.getStartingRoom());
         // just for fun give the player a dagger
         player.getInventory().add(ItemFactory.getDaggerInstance());
 
@@ -58,124 +62,56 @@ public class Game {
     public String openDirection(Actor actor, Direction direction) {
         String msg = "";
         Room currentRoom = actor.getRoom();
-        int targetDirection = currentRoom.getDirection(direction);
-        if (targetDirection == Direction.DOOR) {
-            if (changeRoomDirectionValue(currentRoom, direction, Direction.GENEXIT)) {
-                msg = "With some effort the door becomes unstuck. The door screams into the darkness as you pull it open.";
-            } else {
-                msg = "You fail to open the door. It remains stuck fast.";
-            }
-        } else if (targetDirection == Direction.LOCKED_DOOR) {
-            msg = "You must unlock the door first.";
-        } else if (targetDirection == Direction.BARRICADE) {
-            msg = "You must break the barricade first.";
-        }
-        return msg;
-    }
+        Exit exit = currentRoom.getExit(direction);
 
-    private boolean changeRoomDirectionValue(Room room, Direction fromDirection, int toDirection) {
-        boolean success = false;
-        switch (fromDirection) {
-            case Direction.NORTH:
-                room.setNorth(toDirection);
-                success = true;
-                break;
-            case Direction.EAST:
-                room.setEast(toDirection);
-                success = true;
-                break;
-            case Direction.SOUTH:
-                room.setSouth(toDirection);
-                success = true;
-                break;
-            case Direction.WEST:
-                room.setWest(toDirection);
-                success = true;
-                break;
-            default:
-                break;
+        // verify - target exit can be opened
+        if (exit.getExitState() == ExitState.CLOSED) {
+            exit.setExitState(ExitState.OPEN);
+            exit.setDescription("A door hangs open and the passage beyond leads off into the dark.");
+            msg = "With some effort the door becomes unstuck. The door screams into the darkness as you pull it open.";
+        } else if (exit.getExitState() == ExitState.LOCKED) {
+            msg = "You must unlock the door first.";
+        } else if (exit.getExitState() == ExitState.BLOCKED) {
+            msg = "You must break the barricade first.";
+        } else if (exit.getExitState() == ExitState.TRAPPED) {
+            exit.setExitState(ExitState.OPEN);
+            msg = "A trap is sprung. Something happens!";
+        } else {
+            msg = "There doesn't seem to be anything here to open.";
         }
-        return success;
+
+        return msg;
     }
 
     public String lookDirection(Actor actor, Direction direction) {
-        String msg = "";
         Room currentRoom = actor.getRoom();
-        int targetDirection = currentRoom.getDirection(direction);
-        switch(targetDirection) {
-            case (Direction.NOEXIT):
-                msg = "You stare at stone wall. There is no exit " + direction.toString().toLowerCase();
-                break;
-            case (Direction.DOOR):
-            case (Direction.LOCKED_DOOR):
-                msg = "The way " + direction.toString().toLowerCase() + " is blocked by a door.";
-                break;
-            case (Direction.BARRICADE):
-                msg = "The way " + direction.toString().toLowerCase() + " is barricaded.";
-                break;
-            default:
-                msg = "The passage " + direction.toString().toLowerCase() + " leads off into the dark.";
-                break;
-        };
-
-        return msg;
+        Exit targetExit = currentRoom.getExit(direction);
+        return targetExit.getDescriptionString();
     }
 
     public boolean moveActor(Actor actor, Direction direction) {
+        boolean result = false;
 
         // get the actor's current room
         Room currentRoom = actor.getRoom();
+        // get the target Exit
+        Exit targetExit = currentRoom.getExit(direction);
 
-        // determine if the move can happen
-        int targetDirection = currentRoom.getDirection(direction);
-        // direction blocked
-        if (targetDirection == Direction.NOEXIT) {
-            return false;
-        }
-
-        // blocked by unopened door
-        if (targetDirection == Direction.DOOR || targetDirection == Direction.LOCKED_DOOR) {
-            return false;
-        }
-
-        // check if we should generate a next room
-        if (targetDirection == Direction.GENEXIT) {
-            // generate a room
-            // TODO: refactor this into RoomGenerator
-            RoomGenerator roomGenerator = new RoomGenerator();
-            ArrayList<Room> rooms = map.getRooms();
-            int newRoomId = rooms.size();
-            switch (direction) {
-                case Direction.NORTH:
-                    currentRoom.setNorth(newRoomId);
-                    break;
-                case Direction.EAST:
-                    currentRoom.setEast(newRoomId);
-                    break;
-                case Direction.SOUTH:
-                    currentRoom.setSouth(newRoomId);
-                    break;
-                case Direction.WEST:
-                    currentRoom.setWest(newRoomId);
-                default:
-                    break;
+        if (targetExit.getExitState() == ExitState.OPEN) {
+            // determine if we need to generate a room
+            if (targetExit.leadsToRoom(currentRoom.getId()).equals(IdGenerator.getNullIdString())) {
+                Room newRoom = map.addNewRoom(currentRoom, direction);
+                actor.setRoom(newRoom);
+                result = true;
+            } else {
+                // the room probably already exists
+                Room toRoom = map.getRoom(targetExit.leadsToRoom(currentRoom.getId()));
+                actor.setRoom(toRoom);
+                result = true;
             }
-            Room generatedRoom = roomGenerator.generateRoom(newRoomId, currentRoom);
-            rooms.add(generatedRoom);
-            targetDirection = newRoomId;
-
-            // get the target room
-            Room targetRoom = map.getRooms().get(targetDirection);
-            // apply room to actor
-            actor.setRoom(targetRoom);
-            return true;
         }
 
-        // no known blockers - get the target room
-        Room targetRoom = map.getRooms().get(targetDirection);
-        // apply room to actor
-        actor.setRoom(targetRoom);
-        return true;
+        return result;
 
     }
 

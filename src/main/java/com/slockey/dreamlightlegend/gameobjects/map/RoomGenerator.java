@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.slockey.dreamlightlegend.engine.Direction;
 
 public class RoomGenerator {
 
@@ -22,80 +21,102 @@ public class RoomGenerator {
         init();
     }
 
-    public Room generateRoom(int id, Room parentRoom) {
-        // determine how many exits there should be
+    public Room generateRoom(Room parentRoom, Direction parentDirection) {
+
         int numberOfExits = getNumberOfExits();
 
-        String name = "Room " + id;
-        String description = getRandomRoomDescription();
+        String roomName = "Room...";
+        String roomDescription = getRandomRoomDescription();
         if (numberOfExits == 2) {
             // this may be a corridor - for now we'll say it is
-            name = "Corridor " + id;
-            description = getRandomCorridorDescription();
+            roomName = "Corridor...";
+            roomDescription = getRandomCorridorDescription();
         }
 
-        // Determine the exits
-        // exits: north, east, south, west
-        int[] exits = { Direction.NOEXIT, 
-                        Direction.NOEXIT, 
-                        Direction.NOEXIT, 
-                        Direction.NOEXIT };
+        ArrayList<Direction> availableExitDirections = new ArrayList<>();
+        availableExitDirections.add(Direction.NORTH);
+        availableExitDirections.add(Direction.EAST);
+        availableExitDirections.add(Direction.SOUTH);
+        availableExitDirections.add(Direction.WEST);
 
-        // determine exits - start with the parent
-        if (parentRoom.getNorth() == id) {
-            exits[2] = parentRoom.getId();
-        } else if (parentRoom.getEast() == id) {
-            exits[3] = parentRoom.getId();
-        } else if (parentRoom.getSouth() == id) {
-            exits[0] = parentRoom.getId();
-        } else if (parentRoom.getWest() == id) {
-            exits[1] = parentRoom.getId();
-        }
+        Room generatedRoom = new Room(roomName, roomDescription);
+        // determine the exits - start with the parent
+        Exit parentExit = parentRoom.getExit(parentDirection);
+        parentExit.addLinkedRoomId(generatedRoom.getId());
+        generatedRoom.putExit(Direction.getOppositeDirection(parentDirection), parentExit);
+        availableExitDirections.remove(Direction.getOppositeDirection(parentDirection));
 
         // if more than 1 exit then flag the remainders for lazy loading
         // 60% is a door
         // 40% of doors are locked
         for (int idx = 1; idx < numberOfExits; idx++) {
-            for (int jdx = 0; jdx < exits.length; jdx++) {
-                if (exits[jdx] == Direction.NOEXIT) {
-                    // determine if this is a door or corridor
+            for (Direction dir : availableExitDirections) {
+                if (generatedRoom.getExit(dir).getExitState().equals(ExitState.NONE)) {
+                    Exit anotherExit = new Exit(generatedRoom.getId());
+                    // determine if this is a locked door, door or passage
                     int exitTypePercentile = getPercentile();
                     if (exitTypePercentile <= 20) {
-                        exits[jdx] = Direction.LOCKED_DOOR;
+                        // locked door
+                        anotherExit.setExitState(ExitState.LOCKED);
+                        anotherExit.setDescription("This is a locked door");
+                        generatedRoom.putExit(dir, anotherExit);
+                        availableExitDirections.remove(dir);
                         break;
                     } else if (exitTypePercentile <= 60) {
-                        exits[jdx] = Direction.DOOR;
+                        // door
+                        anotherExit.setExitState(ExitState.CLOSED);
+                        anotherExit.setDescription("This is a closed door");
+                        generatedRoom.putExit(dir, anotherExit);
+                        availableExitDirections.remove(dir);
                         break;
                     } else {
-                        // this is a corridor
-                        exits[jdx] = Direction.GENEXIT;
+                        // passage
+                        anotherExit.setExitState(ExitState.OPEN);
+                        anotherExit.setDescription("This passage leads off into the dark.");
+                        generatedRoom.putExit(dir, anotherExit);
+                        availableExitDirections.remove(dir);
+                        break;
                     }
-                    break;
                 }
             }
         }
-
-        return new Room(id, name, description, exits[0], exits[1], exits[2], exits[3]);
+        return generatedRoom;
     }
 
     /*
         The starting room:
-        + Always ID 0
         + Always a ROOM
         + Always has 4 exits - this guarantees there will be at least 5 rooms total
+        + Always shows the dungeon exit UP that is blocked
      */
     public Room generateStartingRoom() {
-        int id = 0;
-        String name = "Room " + id;
-        String description = """
-                This is a large chamber barely illuminated by a single beam of sunlight from a hole 30 meters above you. A stinking pile of refuse is in the center of the floor.""";
+        String startingRoomName = "Starting Room";
+        String startingRoomDescription = "This is a large chamber barely illuminated by a single beam of sunlight from a hole 30 meters above you. A stinking pile of refuse is in the center of the floor.";
 
-        // determine exits - starting room always has 4 exits
-        return new Room(id, name, description, 
-            Direction.GENEXIT, 
-            Direction.GENEXIT, 
-            Direction.GENEXIT, 
-            Direction.GENEXIT);
+        // create the starting room
+        Room startingRoom = new Room(startingRoomName, startingRoomDescription);
+        // the starting room has passages on 4 cardinal directions
+        startingRoom.putExit(Direction.NORTH, generatePassageExit(startingRoom.getId()));
+        startingRoom.putExit(Direction.EAST, generatePassageExit(startingRoom.getId()));
+        startingRoom.putExit(Direction.SOUTH, generatePassageExit(startingRoom.getId()));
+        startingRoom.putExit(Direction.WEST, generatePassageExit(startingRoom.getId()));
+        // the starting room has a dungeon exit that is currently blocked
+        Exit theExit = new Exit();
+        theExit.addLinkedRoomId(startingRoom.getId());
+        theExit.setExitState(ExitState.BLOCKED);
+        theExit.setDescription("A natural rock chimney leads up to a point of light. If only you could climb up.");
+        startingRoom.putExit(Direction.UP, theExit);
+        return startingRoom;
+    }
+
+    public Exit generatePassageExit(String linkedRoomId) {
+        Exit theExit = new Exit();
+        // apply starting passage data
+        theExit.setExitState(ExitState.OPEN);
+        theExit.setDescription("This passage leads off into the dark.");
+        // store the parent room id
+        theExit.addLinkedRoomId(linkedRoomId);
+        return theExit;
     }
 
     // 15% of rooms have 4 exits

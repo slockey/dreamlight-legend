@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.slockey.dreamlightlegend.gameobjects.entities.Actor;
+import com.slockey.dreamlightlegend.gameobjects.map.Direction;
 
 /*
  * Sample Java file by Huw Collingbourne
