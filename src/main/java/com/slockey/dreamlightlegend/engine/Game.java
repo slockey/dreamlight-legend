@@ -16,15 +16,22 @@ public class Game {
 
     private Map map;
     private Player player;
+    private int turnCounter;
 
     public Game() {
         Parser.initParser();
+        // init local game stuff incl map
         initGame();
+
+        // 8 + D6 starting health
+        int playerStartingHealth = (int)(Math.random() * 6) + 1;
+        playerStartingHealth += 8;
 
         // XXX: temp name, description, first room on map
         player = new Player("Player", 
                     "Just some person, you know?", 
-                                map.getStartingRoom());
+                    playerStartingHealth,
+                    map.getStartingRoom());
         // just for fun give the player a dagger
         player.getInventory().add(ItemFactory.getDaggerInstance());
 
@@ -36,6 +43,7 @@ public class Game {
         map = new Map();
 		map.init();
         // init the stuff
+        turnCounter = 0;
     }
 
     public String runCommand(String input) {

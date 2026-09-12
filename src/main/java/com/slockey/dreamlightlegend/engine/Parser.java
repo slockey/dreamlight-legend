@@ -48,6 +48,7 @@ public class Parser {
         vocab.put("paper", WordType.NOUN);
         vocab.put("pencil", WordType.NOUN);
         vocab.put("sack", WordType.NOUN);
+        vocab.put("self", WordType.NOUN);
         vocab.put("sausage", WordType.NOUN);
         vocab.put("sign", WordType.NOUN);
         vocab.put("slot", WordType.NOUN);
@@ -176,6 +177,16 @@ public class Parser {
             msg = "Can't do this because '" + wt2.getWord() + "' is not an object!";
         } else {
             switch (wt.getWord()) {
+                case "look":
+                case "l":
+                    if (wt2.getWord().equalsIgnoreCase("self")) {
+                        // show self
+                        msg = actor.displaySelf();
+                    } else {
+                        // look at a thing in inventory or in local environment
+                        msg = actor.displayInventoryItemByName(wt2.getWord());
+                    }
+                    break;
                 case "take":
                 case "get":
                     // msg = AdventureGame.game.takeOb(wt2.getWord());
