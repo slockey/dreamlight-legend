@@ -15,6 +15,8 @@ public class AppController {
     public void start() throws Exception {
         // Set the landing message to the model
         model.setSubmittedMessage(game.runCommand("look"));
+        // update the ui turn counter
+        model.setTurnCounter(game.getTurnCounter());
 
         // Initialize the mid-level TuiRunner event manager loop
         try (TuiRunner tui = TuiRunner.create()) {
@@ -63,6 +65,7 @@ public class AppController {
             String resultString = game.runCommand(text);
             if (!text.isBlank()) {
                 model.setSubmittedMessage(resultString);
+                model.setTurnCounter(game.getTurnCounter());
                 model.getInputState().clear(); // Reset line input
             }
             return true;

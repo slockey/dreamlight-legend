@@ -46,6 +46,10 @@ public class Game {
         turnCounter = 0;
     }
 
+    public int getTurnCounter() {
+        return turnCounter;
+    }
+
     public String runCommand(String input) {
         List<String> wordlist;
         String msg;
@@ -88,6 +92,9 @@ public class Game {
             msg = "There doesn't seem to be anything here to open.";
         }
 
+        // update the turn counter
+        turnCounter += 1;
+
         return msg;
     }
 
@@ -118,6 +125,9 @@ public class Game {
                 result = true;
             }
         }
+
+        // update the turn counter
+        turnCounter += 1;
 
         return result;
 

@@ -35,12 +35,13 @@ public class AppView {
         textInput.render(chunks.get(0), buffer, model.getInputState());
 
         // 2. Build and render the feedback block
+        String feedbackBlockTitle = " Game Turn: " + model.getTurnCounter() + " ";
         Paragraph feedbackText = Paragraph.builder()
                 // .text("Last Submission: " + model.getSubmittedMessage())
                 .text(model.getSubmittedMessage())
                 .overflow(Overflow.WRAP_WORD)
                 .alignment(Alignment.LEFT)
-                .block(Block.builder().title(" Status Area ").borders(Borders.ALL).build())
+                .block(Block.builder().title(feedbackBlockTitle).borders(Borders.ALL).build())
                 .build();
 
         feedbackText.render(chunks.get(1), buffer);
