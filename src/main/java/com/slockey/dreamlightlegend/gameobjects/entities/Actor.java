@@ -13,7 +13,7 @@ import lombok.Data;
 public class Actor {
 
     private String name, description;
-    private int health;
+    private int health, athletics;
     private Room room;
     private ArrayList<Item> inventory;
 
@@ -46,6 +46,11 @@ public class Actor {
         buffer.append("Attributes\n");
         buffer.append("Health: ");
         buffer.append(health);
+        buffer.append("\n\n");
+
+        buffer.append("Skills\n");
+        buffer.append("Athletics: ");
+        buffer.append(athletics);
         buffer.append("\n\n");
 
         buffer.append("Description:\n");

@@ -26,11 +26,14 @@ public class Game {
         // 8 + D6 starting health
         int playerStartingHealth = (int)(Math.random() * 6) + 1;
         playerStartingHealth += 8;
+        // starting skill
+        int athletics = 10;
 
         // XXX: temp name, description, first room on map
         player = new Player("Player", 
                     "Just some person, you know?", 
                     playerStartingHealth,
+                    athletics,
                     map.getStartingRoom());
         // just for fun give the player a dagger
         player.getInventory().add(ItemFactory.getDaggerInstance());

@@ -18,8 +18,8 @@ public class Player extends Actor {
     private int exhaustion;
     private int exhaustionResistance;
 
-    public Player(String name, String description, int health, Room room) {
-        super(name, description, health, room, new ArrayList<Item>());
+    public Player(String name, String description, int health, int athletics, Room room) {
+        super(name, description, health, athletics, room, new ArrayList<Item>());
     }
 
 }
