@@ -28,10 +28,12 @@ public class Parser {
 
     static void initVocab() {
         vocab.put("acorn", WordType.NOUN);
+        vocab.put("attack", WordType.VERB);
         vocab.put("bed", WordType.NOUN);
         vocab.put("bone", WordType.NOUN);
         vocab.put("bowl", WordType.NOUN);
         vocab.put("box", WordType.NOUN);
+        vocab.put("break", WordType.VERB);
         vocab.put("button", WordType.NOUN);
         vocab.put("carrot", WordType.NOUN);
         vocab.put("chest", WordType.NOUN);
@@ -156,6 +158,11 @@ public class Parser {
         if (wt.getWordtype() != WordType.VERB) {
             msg = "Can't do this because '" + wt.getWord() + "' is not a command!";
         // this is a special case to deal with 'go <direction>' commands
+        } else if (wt.getWordtype() == WordType.VERB 
+                && wt.getWord().equals("break")
+                && wt2.getWordtype() == WordType.VERB 
+                && Direction.getDirection(wt2.getWord()) != null) {
+                    msg = game.breakDirection(actor, Direction.getDirection(wt2.getWord()));
         } else if (wt.getWordtype() == WordType.VERB 
                 && wt.getWord().equals("go")
                 && wt2.getWordtype() == WordType.VERB 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.slockey.dreamlightlegend.engine.NumberGenerator;
 
 public class RoomGenerator {
 
@@ -54,7 +55,7 @@ public class RoomGenerator {
                 if (generatedRoom.getExit(dir).getExitState().equals(ExitState.NONE)) {
                     Exit anotherExit = new Exit(generatedRoom.getId());
                     // determine if this is a locked door, door or passage
-                    int exitTypePercentile = getPercentile();
+                    int exitTypePercentile = NumberGenerator.getPercentile();
                     if (exitTypePercentile <= 20) {
                         // locked door
                         anotherExit.setExitState(ExitState.LOCKED);
@@ -126,7 +127,7 @@ public class RoomGenerator {
     public int getNumberOfExits() {
         // generate random percentile to determine number of exits
         // minimum is 1 since there will be a linking room id
-        int percentile = getPercentile();
+        int percentile = NumberGenerator.getPercentile();
         if (percentile <= 30) {
             return 1;
         } else if (percentile <= 75) {
@@ -156,10 +157,6 @@ public class RoomGenerator {
 
     public String getCorridorDescription(int id) {
         return corridorDescriptions.get(id);
-    }
-
-    private int getPercentile() {
-        return (int)(Math.random() * 100) + 1;
     }
 
     private void init() {

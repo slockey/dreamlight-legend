@@ -74,6 +74,48 @@ public class Game {
 
     }
 
+    public String breakDirection(Actor actor, Direction direction) {
+        String msg = "";
+        Room currentRoom = actor.getRoom();
+        Exit exit = currentRoom.getExit(direction);
+
+        // verify - target exit can be broken
+        if (exit.getExitState() == ExitState.CLOSED
+            || exit.getExitState() == ExitState.LOCKED
+            || exit.getExitState() == ExitState.BLOCKED) {
+            // test athletics to break down the barrier
+            if (attemptToBreakExit(actor)) {
+                exit.setExitState(ExitState.OPEN);
+                exit.setDescription("A door hangs open and the passage beyond leads off into the dark.");
+                msg = "With some effort the door becomes unstuck. The door screams into the darkness as you pull it open.";
+            } else {
+                msg = "The door begins to crack and strain, but hasn't broken.";
+            }
+        } else if (exit.getExitState() == ExitState.TRAPPED) {
+            exit.setExitState(ExitState.OPEN);
+            msg = "A trap is sprung. Something happens!";
+        } else {
+            msg = "There doesn't seem to be anything here to open.";
+        }
+
+        // update the turn counter
+        turnCounter += 1;
+
+        return msg;
+    }
+
+    private boolean attemptToBreakExit(Actor actor) {
+        boolean result = false;
+
+        // get random pct value equal to or less than actor athletics
+        int pctValue = NumberGenerator.getPercentile();
+        if (pctValue <= actor.getAthletics()) {
+            result = true;
+        }
+
+        return result;
+    }
+
     public String openDirection(Actor actor, Direction direction) {
         String msg = "";
         Room currentRoom = actor.getRoom();
