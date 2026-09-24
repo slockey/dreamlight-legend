@@ -6,4 +6,7 @@ public class ItemFactory {
         return new Dagger();
     }
 
+    public static Torch getTorchInstance() {
+        return new Torch();
+    }
 }

@@ -1,8 +1,10 @@
 package com.slockey.dreamlightlegend.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.slockey.dreamlightlegend.gameobjects.entities.Actor;
+import com.slockey.dreamlightlegend.gameobjects.entities.Item;
 import com.slockey.dreamlightlegend.gameobjects.entities.ItemFactory;
 import com.slockey.dreamlightlegend.gameobjects.entities.Player;
 import com.slockey.dreamlightlegend.gameobjects.map.Direction;
@@ -35,8 +37,6 @@ public class Game {
                     playerStartingHealth,
                     athletics,
                     map.getStartingRoom());
-        // just for fun give the player a dagger
-        player.getInventory().add(ItemFactory.getDaggerInstance());
 
     }
 
@@ -72,6 +72,39 @@ public class Game {
         }
         return msg;
 
+    }
+
+    public String takeItemFromRoom(Actor actor, String itemName) {
+        String msg = "You don't see a " + itemName + " here to take.";
+        // find the item in the current room
+        ArrayList<Item> roomItems = actor.getRoom().getItems();
+        for (Item item : roomItems) {
+            // find the first matching item
+            if (item.getName().equalsIgnoreCase(itemName)) {
+                actor.getInventory().add(item);
+                roomItems.remove(item);
+                msg = "You take the " + item.getName() + ".";
+                break;
+            }
+        }
+
+        return msg;
+    }
+
+    public String dropItemToRoom(Actor actor, String itemName) {
+        String msg = "You don't have a " + itemName + " to drop.";
+        // find the item in the actor inventory
+        ArrayList<Item> actorItems = actor.getInventory();
+        for (Item item : actorItems) {
+            // find the first matching item
+            if (item.getName().equalsIgnoreCase(itemName)) {
+                actor.getRoom().getItems().add(item);
+                actorItems.remove(item);
+                msg = "You drop the " + item.getName() + " on the floor.";
+                break;
+            }
+        }
+        return msg;
     }
 
     public String breakDirection(Actor actor, Direction direction) {

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.slockey.dreamlightlegend.engine.NumberGenerator;
+import com.slockey.dreamlightlegend.gameobjects.entities.Item;
+import com.slockey.dreamlightlegend.gameobjects.entities.ItemFactory;
 
 public class RoomGenerator {
 
@@ -107,6 +109,10 @@ public class RoomGenerator {
         theExit.setExitState(ExitState.BLOCKED);
         theExit.setDescription("A natural rock chimney leads up to a point of light. If only you could climb up.");
         startingRoom.putExit(Direction.UP, theExit);
+
+        // drop a torch on the floow for room 1
+        startingRoom.getItems().add(ItemFactory.getTorchInstance());
+
         return startingRoom;
     }
 

@@ -1,11 +1,17 @@
 package com.slockey.dreamlightlegend.gameobjects.map;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.slockey.dreamlightlegend.gameobjects.entities.Item;
 
 public class Room {
 
     private String id, name, description;
     private HashMap<String,Exit> exitHashMap;
+
+    private boolean scavenged = false;
+    private ArrayList<Item> items;
 
     public Room() {
         this.id = IdGenerator.getRandomIdString();
@@ -18,6 +24,8 @@ public class Room {
         this.exitHashMap.put(Direction.WEST.name(), new Exit(this.id));
         this.exitHashMap.put(Direction.UP.name(), new Exit(this.id));
         this.exitHashMap.put(Direction.DOWN.name(), new Exit(this.id));
+
+        this.items = new ArrayList<>();
     }
 
     public Room(String name, String description) {
@@ -46,6 +54,17 @@ public class Room {
         return description;
     }
 
+    public ArrayList<Item> getItems() {
+        return items;
+    }
+
+    public void scavenge() {
+        if (!scavenged) {
+            // TODO: find some random junk and materials
+            scavenged = true;
+        }
+    }
+
     public String getDisplayString() {
 
         StringBuilder builder = new StringBuilder();
@@ -53,6 +72,16 @@ public class Room {
         builder.append("\n");
         builder.append(description);
         builder.append("\n\n");
+
+        // list items if there are any
+        if (items.size() > 0) {
+            builder.append("There are items: \n");
+            for (Item item : items) {
+                builder.append(item.getName());
+                builder.append("\n");
+            }
+            builder.append("\n\n");
+        }
 
         builder.append("There are exits: \n");
 

@@ -55,8 +55,10 @@ public class Parser {
         vocab.put("sign", WordType.NOUN);
         vocab.put("slot", WordType.NOUN);
         vocab.put("squirrel", WordType.NOUN);
+        vocab.put("torch", WordType.NOUN);
         vocab.put("tree", WordType.NOUN);
         vocab.put("wombat", WordType.NOUN);
+
         vocab.put("test", WordType.VERB);
         vocab.put("get", WordType.VERB);
         vocab.put("i", WordType.VERB);
@@ -85,9 +87,11 @@ public class Parser {
         vocab.put("down", WordType.VERB);
         vocab.put("q", WordType.VERB);
         vocab.put("quit", WordType.VERB);
+
         vocab.put("a", WordType.ARTICLE);
         vocab.put("an", WordType.ARTICLE);
         vocab.put("the", WordType.ARTICLE);
+
         vocab.put("in", WordType.PREPOSITION);
         vocab.put("into", WordType.PREPOSITION);
         vocab.put("at", WordType.PREPOSITION);
@@ -196,12 +200,12 @@ public class Parser {
                     break;
                 case "take":
                 case "get":
-                    // msg = AdventureGame.game.takeOb(wt2.getWord());
-                    msg = String.format("Adventure Game: take object: {}", wt2.getWord());
+                    // the is probably in a room
+                    msg = game.takeItemFromRoom(actor, wt2.getWord());
                     break;
                 case "drop":
-                    // msg = AdventureGame.game.dropOb(wt2.getWord());
-                    msg = String.format("Adventure Game: drop object: {}", wt2.getWord());
+                    // drop the item in the current room
+                    msg = game.dropItemToRoom(actor, wt2.getWord());
                     break;
                 case "open":
                     // msg = AdventureGame.game.openOb(wt2.getWord());
