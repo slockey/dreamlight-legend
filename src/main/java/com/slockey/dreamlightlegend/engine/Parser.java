@@ -27,39 +27,39 @@ public class Parser {
     }
 
     static void initVocab() {
-        vocab.put("acorn", WordType.NOUN);
-        vocab.put("attack", WordType.VERB);
-        vocab.put("bed", WordType.NOUN);
-        vocab.put("bone", WordType.NOUN);
-        vocab.put("bowl", WordType.NOUN);
-        vocab.put("box", WordType.NOUN);
-        vocab.put("break", WordType.VERB);
-        vocab.put("button", WordType.NOUN);
-        vocab.put("carrot", WordType.NOUN);
+        // vocab.put("acorn", WordType.NOUN);
+        // vocab.put("bed", WordType.NOUN);
+        // vocab.put("bone", WordType.NOUN);
+        // vocab.put("bowl", WordType.NOUN);
+        // vocab.put("box", WordType.NOUN);
+        // vocab.put("button", WordType.NOUN);
+        // vocab.put("carrot", WordType.NOUN);
         vocab.put("chest", WordType.NOUN);
-        vocab.put("coin", WordType.NOUN);
+        // vocab.put("coin", WordType.NOUN);
         vocab.put("dagger", WordType.NOUN);
         vocab.put("door", WordType.NOUN);
-        vocab.put("dust", WordType.NOUN);
-        vocab.put("gardenia", WordType.NOUN);
-        vocab.put("key", WordType.NOUN);
-        vocab.put("knife", WordType.NOUN);
-        vocab.put("lamp", WordType.NOUN);
-        vocab.put("leaflet", WordType.NOUN);
-        vocab.put("lever", WordType.NOUN);
-        vocab.put("paper", WordType.NOUN);
-        vocab.put("pencil", WordType.NOUN);
-        vocab.put("sack", WordType.NOUN);
+        // vocab.put("dust", WordType.NOUN);
+        // vocab.put("gardenia", WordType.NOUN);
+        // vocab.put("key", WordType.NOUN);
+        // vocab.put("knife", WordType.NOUN);
+        // vocab.put("lamp", WordType.NOUN);
+        // vocab.put("leaflet", WordType.NOUN);
+        // vocab.put("lever", WordType.NOUN);
+        // vocab.put("paper", WordType.NOUN);
+        // vocab.put("pencil", WordType.NOUN);
+        // vocab.put("sack", WordType.NOUN);
         vocab.put("self", WordType.NOUN);
-        vocab.put("sausage", WordType.NOUN);
-        vocab.put("sign", WordType.NOUN);
-        vocab.put("slot", WordType.NOUN);
-        vocab.put("squirrel", WordType.NOUN);
+        // vocab.put("sausage", WordType.NOUN);
+        // vocab.put("sign", WordType.NOUN);
+        // vocab.put("slot", WordType.NOUN);
+        // vocab.put("squirrel", WordType.NOUN);
         vocab.put("torch", WordType.NOUN);
-        vocab.put("tree", WordType.NOUN);
-        vocab.put("wombat", WordType.NOUN);
+        // vocab.put("tree", WordType.NOUN);
+        // vocab.put("wombat", WordType.NOUN);
 
         vocab.put("test", WordType.VERB);
+        vocab.put("attack", WordType.VERB);
+        vocab.put("break", WordType.VERB);
         vocab.put("get", WordType.VERB);
         vocab.put("i", WordType.VERB);
         vocab.put("inventory", WordType.VERB);
@@ -70,8 +70,8 @@ public class Parser {
         vocab.put("look", WordType.VERB);
         vocab.put("open", WordType.VERB);
         vocab.put("close", WordType.VERB);
-        vocab.put("pull", WordType.VERB);
-        vocab.put("push", WordType.VERB);
+        // vocab.put("pull", WordType.VERB);
+        // vocab.put("push", WordType.VERB);
         vocab.put("go", WordType.VERB);
         vocab.put("n", WordType.VERB);
         vocab.put("north", WordType.VERB);
@@ -87,6 +87,10 @@ public class Parser {
         vocab.put("down", WordType.VERB);
         vocab.put("q", WordType.VERB);
         vocab.put("quit", WordType.VERB);
+        vocab.put("wait", WordType.VERB);
+
+        vocab.put("help", WordType.VERB);
+        vocab.put("commands", WordType.VERB);
 
         vocab.put("a", WordType.ARTICLE);
         vocab.put("an", WordType.ARTICLE);
@@ -105,7 +109,7 @@ public class Parser {
         String msg = "";
         
         if ((wt.getWordtype() != WordType.VERB) || (wt3.getWordtype() != WordType.PREPOSITION)) {
-            msg = "Can't do this because I don't understand ho to '" + wt.getWord() + " something " + wt3.getWord() + "' something!";
+            msg = "Can't do this because I don't understand how to '" + wt.getWord() + " something " + wt3.getWord() + "' something!";
         } else if (wt2.getWordtype() != WordType.NOUN) {
             msg = "Can't do this because '" + wt2.getWord() + "' is not an object!\r\n";
         } else if (wt4.getWordtype() != WordType.NOUN) {
@@ -234,48 +238,50 @@ public class Parser {
             switch (wt.getWord()) {
                 case "n":
                 case "north":
-                    // AdventureGame.game.goN();
                     success = game.moveActor(actor, Direction.NORTH);
                     msg = (success) ? actor.getRoom().getDisplayString() : MSG_CANT_MOVE_THAT_DIRECTION;
                     break;
                 case "s":
                 case "south":
-                    // AdventureGame.game.goS();
                     success = game.moveActor(actor, Direction.SOUTH);
                     msg = (success) ? actor.getRoom().getDisplayString() : MSG_CANT_MOVE_THAT_DIRECTION;
                     break;
                 case "w":
                 case "west":
-                    // AdventureGame.game.goW();
                     success = game.moveActor(actor, Direction.WEST);
                     msg = (success) ? actor.getRoom().getDisplayString() : MSG_CANT_MOVE_THAT_DIRECTION;
                     break;
                 case "e":
                 case "east":
-                    // AdventureGame.game.goE();
                     success = game.moveActor(actor, Direction.EAST);
                     msg = (success) ? actor.getRoom().getDisplayString() : MSG_CANT_MOVE_THAT_DIRECTION;
                     break;
                 case "u":
                 case "up":
-                    // AdventureGame.game.goUp();
                     success = game.moveActor(actor, Direction.UP);
                     msg = (success) ? actor.getRoom().getDisplayString() : MSG_CANT_MOVE_THAT_DIRECTION;
                     break;
                 case "d":
                 case "down":
-                    // AdventureGame.game.goDown();
                     success = game.moveActor(actor, Direction.DOWN);
                     msg = (success) ? actor.getRoom().getDisplayString() : MSG_CANT_MOVE_THAT_DIRECTION;
                     break;
                 case "l":
                 case "look":
-                    // AdventureGame.game.look();
                     msg = actor.getRoom().getDisplayString();
                     break;
                 case "inventory":
                 case "i":
                     msg = actor.displayInventory();
+                    break;
+                case "help":
+                    msg = String.format("The void helps those who help themselves. You must find your way out or through.\nPerhaps if you referred to the commands...");
+                    break;
+                case "commands":
+                    msg = game.displayCommands();
+                    break;
+                case "wait":
+                    msg = game.waitCommand();
                     break;
                 case "test":
                     // AdventureGame.game.test();

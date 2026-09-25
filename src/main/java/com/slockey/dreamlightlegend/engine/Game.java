@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.slockey.dreamlightlegend.gameobjects.entities.Actor;
 import com.slockey.dreamlightlegend.gameobjects.entities.Item;
-import com.slockey.dreamlightlegend.gameobjects.entities.ItemFactory;
 import com.slockey.dreamlightlegend.gameobjects.entities.Player;
 import com.slockey.dreamlightlegend.gameobjects.map.Direction;
 import com.slockey.dreamlightlegend.gameobjects.map.Exit;
@@ -209,6 +208,37 @@ public class Game {
 
         return result;
 
+    }
+
+    public String waitCommand() {
+        turnCounter += 1;
+        return "You wait and time passes.";
+    }
+
+    public String displayCommands() {
+        StringBuilder builder = new StringBuilder();
+        // return "TBD - commands will be displayed";
+
+        // how to write commands
+        builder.append("Commands can be composed in the following ways:\n\n");
+        builder.append("\tVerb\n");
+        builder.append("\tVerb Noun\n");
+        builder.append("\tVerb Preposition Noun\n");
+        builder.append("\tVerb Noun Preposition Noun");
+
+        // verbs
+        builder.append("\n\nExample verbs:\n\n");
+        builder.append("look, go, break, wait...\n\n");
+
+        // nouns
+        builder.append("\n\nExample nouns:\n\n");
+        builder.append("north, torch, self...\n\n");
+
+        // nouns
+        builder.append("\n\nExample commands:\n\n");
+        builder.append("go north, get torch, look self...\n\n");
+
+        return builder.toString();
     }
 
     // utility method to display string if not empty
