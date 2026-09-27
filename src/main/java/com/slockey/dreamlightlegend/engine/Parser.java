@@ -235,6 +235,7 @@ public class Parser {
                     msg = game.dropItemToRoom(actor, wt2.getWord());
                     break;
                 case "open":
+                    msg = "I don't know how to open a " + wt2.getWord() + ".";
                     if (wt2.getWord().equalsIgnoreCase("chest")) {
                         if (actor.getRoom().getInventory().contains("chest")) {
                             Item chest = actor.getRoom().getInventory().getItem("chest");
@@ -245,6 +246,9 @@ public class Parser {
                     }
                     break;
                 case "break":
+                    // trying to break an item
+                    msg = "Why would you want to break the " + wt2.getWord() + "?";
+                    // break the chest
                     if (wt2.getWord().equalsIgnoreCase("chest")) {
                         if (actor.getRoom().getInventory().contains("chest")) {
                             Item chest = actor.getRoom().getInventory().getItem("chest");
@@ -255,8 +259,15 @@ public class Parser {
                     }
                     break;
                 case "close":
-                    // msg = AdventureGame.game.closeOb(wt2.getWord());
-                    msg = String.format("Adventure Game: close object: {}", wt2.getWord());
+                    msg = "I don't know how to close a " + wt2.getWord() + ".";
+                    if (wt2.getWord().equalsIgnoreCase("chest")) {
+                        if (actor.getRoom().getInventory().contains("chest")) {
+                            Item chest = actor.getRoom().getInventory().getItem("chest");
+                            msg = game.closeChest(actor, (Chest)chest);
+                        } else {
+                            msg = "There doesn't seem to be a chest here to open.";
+                        }
+                    }
                     break;
                 default:
                     msg += " (not yet implemented)";

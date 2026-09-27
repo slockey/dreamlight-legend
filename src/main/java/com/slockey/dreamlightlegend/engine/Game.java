@@ -142,8 +142,18 @@ public class Game {
                 msg = "You hammer at the lock, but it has not yet broken.";
             }
         }
-
+        turnCounter += 1;
         return msg;
+    }
+
+    public String closeChest(Actor actor, Chest chest) {
+        String msg = "The lid of the chest is already closed.";
+        if (!chest.isClosed()) {
+            chest.setClosed(true);
+            msg = "The lid of the chest fits snugly into place.";
+        }
+        turnCounter += 1;
+        return  msg;
     }
 
     public String openChest(Actor actor, Chest chest) {
@@ -162,6 +172,7 @@ public class Game {
             }
             chest.setClosed(false);
         }
+        turnCounter += 1;
         return msg;
     }
 
