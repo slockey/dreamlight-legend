@@ -15,13 +15,12 @@ public class Actor {
     private String name, description;
     private int health, athletics;
     private Room room;
-    private ArrayList<Item> inventory;
+    private Inventory inventory;
 
     public String displayInventoryItemByName(String itemName) {
-        for (Item item : inventory) {
-            if (item.getName().equalsIgnoreCase(itemName)) {
-                return item.getDescription();
-            }
+        if (inventory.contains(itemName)) {
+            Item item = inventory.getItem(itemName);
+            return item.getDescription();
         }
         return "You don't seem to have a " + itemName;
     }
@@ -30,7 +29,7 @@ public class Actor {
         StringBuffer buffer = new StringBuffer();
         buffer.append(name);
         buffer.append(" has:\n");
-        for (Item item : inventory) {
+        for (Item item : inventory.getAllItems()) {
             buffer.append(item.getName());
             buffer.append("\n");
         }
@@ -58,7 +57,7 @@ public class Actor {
         buffer.append("\n\n");
 
         buffer.append("Inventory:\n");
-        for (Item item : inventory) {
+        for (Item item : inventory.getAllItems()) {
             buffer.append(item.getName());
             buffer.append("\n");
         }

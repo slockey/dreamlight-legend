@@ -3,6 +3,7 @@ package com.slockey.dreamlightlegend.gameobjects.map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.slockey.dreamlightlegend.gameobjects.entities.Inventory;
 import com.slockey.dreamlightlegend.gameobjects.entities.Item;
 
 public class Room {
@@ -11,7 +12,7 @@ public class Room {
     private HashMap<String,Exit> exitHashMap;
 
     private boolean scavenged = false;
-    private ArrayList<Item> items;
+    private Inventory inventory;
 
     public Room() {
         this.id = IdGenerator.getRandomIdString();
@@ -25,7 +26,7 @@ public class Room {
         this.exitHashMap.put(Direction.UP.name(), new Exit(this.id));
         this.exitHashMap.put(Direction.DOWN.name(), new Exit(this.id));
 
-        this.items = new ArrayList<>();
+        this.inventory = new Inventory();
     }
 
     public Room(String name, String description) {
@@ -54,8 +55,8 @@ public class Room {
         return description;
     }
 
-    public ArrayList<Item> getItems() {
-        return items;
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public void scavenge() {
@@ -74,9 +75,9 @@ public class Room {
         builder.append("\n\n");
 
         // list items if there are any
-        if (items.size() > 0) {
+        if (inventory.getSize() > 0) {
             builder.append("There are items: \n");
-            for (Item item : items) {
+            for (Item item : inventory.getAllItems()) {
                 builder.append(item.getName());
                 builder.append("\n");
             }

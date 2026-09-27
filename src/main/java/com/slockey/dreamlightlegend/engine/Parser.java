@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.slockey.dreamlightlegend.gameobjects.entities.Actor;
+import com.slockey.dreamlightlegend.gameobjects.entities.Chest;
+import com.slockey.dreamlightlegend.gameobjects.entities.Item;
 import com.slockey.dreamlightlegend.gameobjects.map.Direction;
 
 /*
@@ -99,6 +101,7 @@ public class Parser {
         vocab.put("in", WordType.PREPOSITION);
         vocab.put("into", WordType.PREPOSITION);
         vocab.put("at", WordType.PREPOSITION);
+        vocab.put("from", WordType.PREPOSITION);
     }
 
     static String processVerbNounPrepositionNoun(Game game, Actor actor, List<WordAndType> command) {
@@ -118,8 +121,21 @@ public class Parser {
             switch (wt.getWord() + wt3.getWord()) {
                 case "putin":
                 case "putinto":
-                    // msg = AdventureGame.game.putObInContainer(wt2.getWord(), wt4.getWord());
-                    msg = String.format("Adventure Game: put object in container: {} {}", wt2.getWord(), wt4.getWord());
+                    if (wt4.getWord().equalsIgnoreCase("chest")) {
+                        if (actor.getRoom().getInventory().contains("chest")) {
+                            Item chest = actor.getRoom().getInventory().getItem("chest");
+                            msg = game.putItemInChest(actor, (Chest)chest, wt2.getWord());
+                        }
+                    }
+                    break;
+                case "getfrom":
+                case "takefrom":
+                    if (wt4.getWord().equalsIgnoreCase("chest")) {
+                        if (actor.getRoom().getInventory().contains("chest")) {
+                            Item chest = actor.getRoom().getInventory().getItem("chest");
+                            msg = game.takeItemFromChest(actor, (Chest)chest, wt2.getWord());
+                        }
+                    }
                     break;
                 default:
                     msg = "I don't know how to " + wt.getWord() + " " + wt2.getWord() + " " + wt3.getWord() + " " + wt4.getWord() + "!";
@@ -147,8 +163,15 @@ public class Parser {
                     msg = String.format("Adventure Game: look at object: {}", wt3.getWord());
                     break;
                 case "lookin":
-                    // msg = AdventureGame.game.lookInOb(wt3.getWord());
-                    msg = String.format("Adventure Game: look in object: {}", wt3.getWord());
+                    if (wt3.getWord().equalsIgnoreCase("chest")) {
+                        // is there a chest here
+                        if (actor.getRoom().getInventory().contains("chest")) {
+                            Item chest = actor.getRoom().getInventory().getItem("chest");
+                            msg = game.lookInChest(actor, (Chest)chest);
+                        } else {
+                            msg = "There doesn't seem to be a chest here.";
+                        }
+                    }
                     break;
                 default:
                     msg = "I don't know how to " + wt.getWord() + " " + wt2.getWord() + " " + wt3.getWord() + "!";
@@ -199,7 +222,7 @@ public class Parser {
                         msg = actor.displaySelf();
                     } else {
                         // look at a thing in inventory or in local environment
-                        msg = actor.displayInventoryItemByName(wt2.getWord());
+                        msg = game.lookAtItem(actor, wt2.getWord());
                     }
                     break;
                 case "take":
@@ -212,8 +235,24 @@ public class Parser {
                     msg = game.dropItemToRoom(actor, wt2.getWord());
                     break;
                 case "open":
-                    // msg = AdventureGame.game.openOb(wt2.getWord());
-                    msg = String.format("Adventure Game: open object: {}", wt2.getWord());
+                    if (wt2.getWord().equalsIgnoreCase("chest")) {
+                        if (actor.getRoom().getInventory().contains("chest")) {
+                            Item chest = actor.getRoom().getInventory().getItem("chest");
+                            msg = game.openChest(actor, (Chest)chest);
+                        } else {
+                            msg = "There doesn't seem to be a chest here to open.";
+                        }
+                    }
+                    break;
+                case "break":
+                    if (wt2.getWord().equalsIgnoreCase("chest")) {
+                        if (actor.getRoom().getInventory().contains("chest")) {
+                            Item chest = actor.getRoom().getInventory().getItem("chest");
+                            msg = game.breakChest(actor, (Chest)chest);
+                        } else {
+                            msg = "There doesn't seem to be a chest here to break.";
+                        }
+                    }
                     break;
                 case "close":
                     // msg = AdventureGame.game.closeOb(wt2.getWord());

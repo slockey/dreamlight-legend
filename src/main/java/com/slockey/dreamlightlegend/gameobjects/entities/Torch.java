@@ -10,5 +10,6 @@ public class Torch implements Item {
     boolean equipable = true;
     boolean consumable = true;
     boolean craftable = true;
+    boolean container = false;
 
 }

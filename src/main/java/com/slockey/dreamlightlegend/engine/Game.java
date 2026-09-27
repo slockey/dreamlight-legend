@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.slockey.dreamlightlegend.gameobjects.entities.Actor;
+import com.slockey.dreamlightlegend.gameobjects.entities.Chest;
+import com.slockey.dreamlightlegend.gameobjects.entities.Inventory;
 import com.slockey.dreamlightlegend.gameobjects.entities.Item;
 import com.slockey.dreamlightlegend.gameobjects.entities.Player;
 import com.slockey.dreamlightlegend.gameobjects.map.Direction;
@@ -76,15 +78,12 @@ public class Game {
     public String takeItemFromRoom(Actor actor, String itemName) {
         String msg = "You don't see a " + itemName + " here to take.";
         // find the item in the current room
-        ArrayList<Item> roomItems = actor.getRoom().getItems();
-        for (Item item : roomItems) {
-            // find the first matching item
-            if (item.getName().equalsIgnoreCase(itemName)) {
-                actor.getInventory().add(item);
-                roomItems.remove(item);
-                msg = "You take the " + item.getName() + ".";
-                break;
-            }
+        Inventory roomInventory = actor.getRoom().getInventory();
+        if (roomInventory.contains(itemName)) {
+            Item item = roomInventory.getItem(itemName);
+            actor.getInventory().addItem(item);
+            roomInventory.removeItem(item);
+            msg = "You take the " + item.getName() + ".";
         }
 
         return msg;
@@ -93,16 +92,91 @@ public class Game {
     public String dropItemToRoom(Actor actor, String itemName) {
         String msg = "You don't have a " + itemName + " to drop.";
         // find the item in the actor inventory
-        ArrayList<Item> actorItems = actor.getInventory();
-        for (Item item : actorItems) {
-            // find the first matching item
-            if (item.getName().equalsIgnoreCase(itemName)) {
-                actor.getRoom().getItems().add(item);
-                actorItems.remove(item);
-                msg = "You drop the " + item.getName() + " on the floor.";
-                break;
+        if (actor.getInventory().contains(itemName)) {
+            Item item = actor.getInventory().getItem(itemName);
+            actor.getRoom().getInventory().addItem(item);
+            actor.getInventory().removeItem(item);
+            msg = "You drop the " + item.getName() + " on the floor.";
+        }
+
+        return msg;
+    }
+
+    // from inventory to container
+    public String putItemInChest(Actor actor, Chest chest, String itemName) {
+        String msg = "You don't have a " + itemName + " to put in the chest.";
+
+        if (actor.getInventory().contains(itemName)) {
+            Item item = actor.getInventory().getItem(itemName);
+            chest.getInventory().addItem(item);
+            actor.getInventory().removeItem(item);
+            msg = "You put the " + item.getName() + " into the chest.";
+        }
+
+        return msg;
+    }
+
+    // from container to inventory
+    public String takeItemFromChest(Actor actor, Chest chest, String itemName) {
+        String msg = "The chest doesn't contain a " + itemName;
+
+        if (chest.getInventory().contains(itemName)) {
+            Item item = chest.getInventory().getItem(itemName);
+            actor.getInventory().addItem(item);
+            chest.getInventory().removeItem(item);
+            msg = "You take the " + item.getName() + ".";
+        }
+
+        return msg;
+    }
+
+    // break the lock
+    public String breakChest(Actor actor, Chest chest) {
+        String msg = "Why would you want to do that? Perhaps you should just open the chest.";
+
+        if (chest.isLocked()) {
+            if (attemptToBreak(actor)) {
+                chest.setLocked(false);
+                msg = "You hammer at the lock and with a great crack it is now unlocked.";
+            } else {
+                msg = "You hammer at the lock, but it has not yet broken.";
             }
         }
+
+        return msg;
+    }
+
+    public String openChest(Actor actor, Chest chest) {
+        String msg = "The lid of the chest hangs open revealing it's contents.";
+
+        if (chest.isClosed()) {
+            if (chest.isLocked()) {
+                return "The chest appears to be locked.";
+            }
+            if (chest.isTrapped()) {
+                msg = "The hinges squeek as you open the lid of the chest.\n";
+                msg += "You gasp and choke as the chest releases toxic fumes.";
+                actor.setHealth(actor.getHealth() - 5);
+                // trap only goes off one time
+                chest.setTrapped(false);
+            }
+            chest.setClosed(false);
+        }
+        return msg;
+    }
+
+    public String lookInChest(Actor actor, Chest chest) {
+        String msg = "The chest is empty.";
+
+        if (chest.isClosed()) {
+            return "You must open the chest first.";
+        }
+
+        if (chest.getInventory().getSize() > 0) {
+            msg = "The chest contains: \n";
+            msg += chest.getInventory().displayContents();
+        }
+
         return msg;
     }
 
@@ -116,7 +190,7 @@ public class Game {
             || exit.getExitState() == ExitState.LOCKED
             || exit.getExitState() == ExitState.BLOCKED) {
             // test athletics to break down the barrier
-            if (attemptToBreakExit(actor)) {
+            if (attemptToBreak(actor)) {
                 exit.setExitState(ExitState.OPEN);
                 exit.setDescription("A door hangs open and the passage beyond leads off into the dark.");
                 msg = "With some effort the door becomes unstuck. The door screams into the darkness as you pull it open.";
@@ -136,7 +210,7 @@ public class Game {
         return msg;
     }
 
-    private boolean attemptToBreakExit(Actor actor) {
+    private boolean attemptToBreak(Actor actor) {
         boolean result = false;
 
         // get random pct value equal to or less than actor athletics
@@ -179,6 +253,22 @@ public class Game {
         Room currentRoom = actor.getRoom();
         Exit targetExit = currentRoom.getExit(direction);
         return targetExit.getDescriptionString();
+    }
+
+    // this could be in actor inventory or in the current room
+    public String lookAtItem(Actor actor, String itemName) {
+        String msg = "There doesn't seem to be a " + itemName + " here.";
+
+        // is this item in the actor inventory?
+        // is this item in the current room?
+        if (actor.getInventory().contains(itemName)) {
+            msg = actor.displayInventoryItemByName(itemName);
+        } else if (actor.getRoom().getInventory().contains(itemName)) {
+            Item item = actor.getRoom().getInventory().getItem(itemName);
+            msg = item.getDescription();
+        }
+
+        return msg;
     }
 
     public boolean moveActor(Actor actor, Direction direction) {

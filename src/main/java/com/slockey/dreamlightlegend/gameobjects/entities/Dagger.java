@@ -10,5 +10,6 @@ public class Dagger implements Item {
     boolean equipable = true;
     boolean consumable = false;
     boolean craftable = false;
+    boolean container = false;
 
 }

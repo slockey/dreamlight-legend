@@ -111,7 +111,9 @@ public class RoomGenerator {
         startingRoom.putExit(Direction.UP, theExit);
 
         // drop a torch on the floow for room 1
-        startingRoom.getItems().add(ItemFactory.getTorchInstance());
+        startingRoom.getInventory().addItem(ItemFactory.getTorchInstance());
+        // XXX: for now add a chest to the starting room
+        startingRoom.getInventory().addItem(ItemFactory.getChestInstance());
 
         return startingRoom;
     }

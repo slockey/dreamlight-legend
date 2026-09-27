@@ -7,4 +7,5 @@ public interface Item {
     boolean isEquipable();
     boolean isConsumable();
     boolean isCraftable();
+    boolean isContainer();
 }
