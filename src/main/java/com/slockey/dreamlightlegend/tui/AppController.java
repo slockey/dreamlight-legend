@@ -35,12 +35,13 @@ public class AppController {
         }
     }
 
+    private void quitEvent(TuiRunner runner) {
+        runner.quit();
+    }
+
     private boolean handleKeyboard(KeyEvent event, TuiRunner runner) {
         // Use standard TamboUI helper hooks to exit cleanly on "q" or "Esc" keys
-        if (event.isQuit() || event.isCancel()) {
-            runner.quit();
-            return true;
-        }
+        // if (event.isQuit() || event.isCancel()) {
 
         // Handle mutations to our target text field state
         if (event.code() == KeyCode.CHAR) {
@@ -61,6 +62,13 @@ public class AppController {
         } else if (event.code() == KeyCode.ENTER) {
             // Process the message inside the controller layer
             String text = model.getInputState().text();
+
+            // check for quit command
+            if (text.equalsIgnoreCase("quit")) {
+                quitEvent(runner);
+                return true;
+            }
+
             // run game command
             String resultString = game.runCommand(text);
             if (!text.isBlank()) {
